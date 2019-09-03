@@ -1,5 +1,8 @@
 package com.spring.boardFree;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -333,13 +336,12 @@ public class BoardFreeServiceImpl implements BoardFreeService {
 		
 	}
 
-
 	@Override
 	public List<BoardFreeVO> listAll() {
 		BoardFreeDAO boardFreeDAO = sqlSession.getMapper(BoardFreeDAO.class);
 		return boardFreeDAO.listAll(); 
 	}
-	
+
 	@Override
 	public String getMemberNickname(String m_email) {
 		BoardFreeDAO BoardFreeDAO = sqlSession.getMapper(BoardFreeDAO.class);
@@ -388,7 +390,6 @@ public class BoardFreeServiceImpl implements BoardFreeService {
 		return id;
 	}
 
-
 	@Override
 	public List<BoardFreeVO> listCriteria(Criteria criteria) {
 		BoardFreeDAO boardDAO = sqlSession.getMapper(BoardFreeDAO.class);
@@ -423,6 +424,54 @@ public class BoardFreeServiceImpl implements BoardFreeService {
     public int countSearchedArticles(SearchCriteria searchCriteria) {
     	BoardFreeDAO boardDAO = sqlSession.getMapper(BoardFreeDAO.class);
     	return boardDAO.countSearchedArticles(searchCriteria);
+    }
+	
+    @Override
+    public List<BoardFreeVO> boardListDaily() {
+    	BoardFreeDAO boardDAO = sqlSession.getMapper(BoardFreeDAO.class);
+    	List<BoardFreeVO> result = boardDAO.boardListDaily();
+    	for(int i=0; i<result.size(); i++) {
+			int id = result.get(i).getId();
+			String nickname = userNickName(id);
+			result.get(i).setNickname(nickname);
+//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+//			String date = sdf.format(result.get(i).getBf_update_date());
+//			Date update_Date;
+//			try {
+//				update_Date = new java.text.SimpleDateFormat("yyyy/MM/dd").parse(date);
+//			} catch (ParseException e) {
+//				// TODO Auto-generated catch block
+//				update_Date = null;
+//			}
+//			System.out.println(date + ", " + update_Date);
+
+			
+		}
+    	return result;
+    }
+    
+    @Override
+    public List<BoardFreeVO> boardListWeekly() {
+    	BoardFreeDAO boardDAO = sqlSession.getMapper(BoardFreeDAO.class);
+    	List<BoardFreeVO> result = boardDAO.boardListWeekly();
+    	for(int i=0; i<result.size(); i++) {
+			int id = result.get(i).getId();
+			String nickname = userNickName(id);
+			result.get(i).setNickname(nickname);
+		}
+    	return result;
+    }
+    
+    @Override
+    public List<BoardFreeVO> boardListMonthly() {
+    	BoardFreeDAO boardDAO = sqlSession.getMapper(BoardFreeDAO.class);
+    	List<BoardFreeVO> result = boardDAO.boardListMonthly();
+    	for(int i=0; i<result.size(); i++) {
+			int id = result.get(i).getId();
+			String nickname = userNickName(id);
+			result.get(i).setNickname(nickname);
+		}
+    	return result;
     }
 
 }

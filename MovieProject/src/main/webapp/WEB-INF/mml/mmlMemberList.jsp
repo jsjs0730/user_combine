@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+	<%@ page import="com.spring.member.MemberVO" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!--
 /**
 * @Class Name : mmlMemberList.jsp
@@ -24,6 +26,20 @@
 
 <!-- 2. 여기에 페이지별 css 추가해주세요 -->
 <link rel="stylesheet" href="<c:url value="/resources/css/sp_style.css" />">
+
+<style>
+.js-load {
+    display: none;
+}
+.js-load.active {
+    display: block;
+}
+.is_comp.js-load:after {
+    display: block;
+}
+</style>
+
+
 <script src="https://kit.fontawesome.com/bb8498b585.js"></script>
 
 <!-- 3. heaer2.jsp : header -->
@@ -45,15 +61,30 @@
                         <div class="social-link" style="width:1258px; display:flex;">
                        
                             <div style="flex:2;">
-                                <img src="<c:url value="/resources/images/sp_image/dog.jfif"/>"  class="profile_img">
-                           &nbsp;&nbsp; <img class="crown" src="<c:url value="/resources/images/sp_image/crown.png"/>">&nbsp;<h2 style="display:inline">nickname</h2>
+                                <%
+							MemberVO follower = (MemberVO) request.getAttribute("follower");
+							if (follower.getM_image() == null || follower.getM_image().equals("")
+									|| follower.getM_image().equals("null")) {
+						%>
+						<img src="resources/images/customs/ws_img/defaultprofile.PNG"
+							style="width: 120px; height: 120px;border-radius:60px;">
+						<%
+							} else {
+						%>
+						<img src="./upload/${requestScope.follower.m_image }"
+							style="width: 120px; height: 120px;border-radius:60px;">
+						<%
+							}
+						%>
+                           
+                           <h2 style="display:inline">${follower.m_nickname}</h2>
                             </div>
                            
                             <div style="flex:2;"> 
                           
-                            <h4 style="display:inline; color: lightcoral" >140 </h4>&nbsp;&nbsp;&nbsp;&nbsp;<h4 style="display:inline">Followers</h4> 
+                            <h4 style="display:inline; color: lightcoral" >${follower.m_follower }</h4>&nbsp;&nbsp;&nbsp;&nbsp;<h4 style="display:inline">Followers</h4> 
                           
-							&nbsp;&nbsp;&nbsp;&nbsp; <h4 style="display:inline; color: lightcoral">27 &nbsp;&nbsp;&nbsp;  </h4><h4 style="display:inline">Followings</h4>
+							&nbsp;&nbsp;&nbsp;&nbsp; <h4 style="display:inline; color: lightcoral">${follower.m_following } &nbsp;&nbsp;&nbsp;  </h4><h4 style="display:inline">Followings</h4>
                             
                             </div>
                             
@@ -71,11 +102,15 @@
 
 
 				<div class="row1">
+				<div id="contents">
+				<div id="js-load" class="main">
 	
 	<c:forEach var="mml3" items="${requestScope.mmlList3 }">
-	<div class="sp_col-md-41">
-							<div class="card" OnClick="location.href ='mmlGet '" style="cursor:pointer;">
-									<img class="card-img" src="<c:url value="/resources/images/sp_image/${mml3.mml_poster }"/>" alt="header" />
+	<li class="js-load">
+	<div class="sp_col-md-41" id="js-load">
+							<div class="card" OnClick="location.href ='mmlGet?mml_num=${mml3.mml_num} '" style="cursor:pointer;">
+									<c:set var="poster_one" value="${fn:split(mml3.mml_poster,',')}" />
+                           <img class="card-img" src="<c:url value="${poster_one[0] }"/>" alt="header" />
 									<div class="card-info">
 										<div class="card-ho"></div>
 											<div class="ho-info" style="float:left;">									
@@ -90,18 +125,22 @@
 									</div>
 								  </div>
 					</div>
+					</li>
 					</c:forEach>
 							
 				
 						
 					</div>
 					
+                 
                     <center>
-                        
-                        <button type="button" class="btn-check" OnClick="location.href = #"> 더보기 </button>
+                        <div id="js-btn-wrap" class="btn-wrap"> <a href="javascript:;" class="button">더보기</a> </div>
+                        <!--  <button type="button" class="btn-check" OnClick="location.href = '#'"> 더보기 </button>-->
                     </center>
 
 			<div class="col-md-3 col-xs-12 col-sm-12">
+			</div>
+			</div>
 			</div>
 		</div>
 	</div>
@@ -111,6 +150,29 @@
 
 
 
-<%@ include file="../footer.jsp"%>
-</body>
-</html>
+<script>
+$(window).on('load', function () {
+    load('#js-load', '5');
+    $("#js-btn-wrap .button").on("click", function () {
+        load('#js-load', '5', '#js-btn-wrap');
+    });
+});
+
+function load(id, cnt, btn) {
+    var girls_list = id + " .js-load:not(.active)";
+    var girls_length = $(girls_list).length;
+    var girls_total_cnt;
+    if (cnt < girls_length) {
+        girls_total_cnt = cnt;
+    } else {
+       girls_total_cnt = girls_length;
+        $('.button').hide()
+    }
+    $(girls_list + ":lt(" + girls_total_cnt + ")").addClass("active");
+}
+
+</script>
+
+<!-- <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script> -->
+<%@ include file="../footer1.jsp"%>
+<%@ include file="../footer2.jsp"%>
